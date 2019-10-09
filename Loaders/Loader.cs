@@ -8,12 +8,13 @@ namespace MainApp.Loaders
 {
     class Loader
     {
-        public RawModel LoadToVAO(float[] positions)
+        public RawModel LoadToVAO(float[] positions, int[] indicies)
         {
             int vaoID = createVAO();
+            BindIndiciesBuffer(indicies);
             StoreDataInAtrributeList(0, positions);
             UnBindVAO();
-            return new RawModel(vaoID, positions.Length);
+            return new RawModel(vaoID, indicies.Length);
         }
 
         private int createVAO()
@@ -33,5 +34,13 @@ namespace MainApp.Loaders
         }
 
         private void UnBindVAO() => GL.BindVertexArray(0);
+
+        private void BindIndiciesBuffer(int[] indicies)
+        {
+            int vboID = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, vboID);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, indicies.Length * sizeof(int), indicies, BufferUsageHint.StaticDraw);
+            //GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+        }
     }
 }

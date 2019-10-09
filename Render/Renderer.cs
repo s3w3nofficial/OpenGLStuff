@@ -18,7 +18,7 @@ namespace MainApp.Render
         {
             GL.BindVertexArray(model.vaoID);
             GL.EnableVertexAttribArray(0);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, model.vertexCount);
+            GL.DrawElements(PrimitiveType.Triangles, model.vertexCount, DrawElementsType.UnsignedInt, 0);
             GL.DisableVertexAttribArray(0);
             GL.BindVertexArray(0);
         }

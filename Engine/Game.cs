@@ -15,10 +15,14 @@ namespace MainApp.Engine
             -0.5f, 0.5f, 0f,
             -0.5f, -0.5f, 0f,
             0.5f, -0.5f, 0f,
-            0.5f, -0.5f, 0f,
             0.5f, 0.5f, 0f,
-            -0.5f, 0.5f, 0f,
 
+        };
+
+        int[] indicies =
+        {
+            0,1,3,
+            3,1,2
         };
 
         public DisplayManager Display { get; private set; }
@@ -31,7 +35,7 @@ namespace MainApp.Engine
             this.Loader = new Loader();
             this.Renderer = new Renderer();
 
-            TestModel = this.Loader.LoadToVAO(verticies);
+            TestModel = this.Loader.LoadToVAO(verticies, indicies);
 
             GL.Viewport(0, 0, 1280, 720);
 
