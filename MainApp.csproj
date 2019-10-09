@@ -9,4 +9,13 @@
     <PackageReference Include="OpenTK.NetStandard" Version="1.0.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Shaders\fragmentShader.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Shaders\vertexShader.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

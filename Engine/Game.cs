@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using OpenTK.Graphics.OpenGL4;
+using MainApp.Shaders;
 
 namespace MainApp.Engine
 {
@@ -28,12 +29,14 @@ namespace MainApp.Engine
         public DisplayManager Display { get; private set; }
         public Loader Loader { get; private set; }
         public Renderer Renderer { get; private set; }
+        public StaticShader StaticShader { get; private set; }
         private RawModel TestModel;
         public Game()
         {
             this.Display = new DisplayManager(1280, 720);
             this.Loader = new Loader();
             this.Renderer = new Renderer();
+            this.StaticShader = new StaticShader();
 
             TestModel = this.Loader.LoadToVAO(verticies, indicies);
 
@@ -51,7 +54,12 @@ namespace MainApp.Engine
         private void RenderFrame(object sender, OpenTK.FrameEventArgs e)
         {
             this.Renderer.Prepare();
+
+            this.StaticShader.Use();
+
             this.Renderer.Render(this.TestModel);
+
+            this.StaticShader.UnUse();
 
             this.Display.SwapBuffers();
         }
