@@ -132,7 +132,7 @@ namespace MainApp.Engine
         {
             time = (float)e.Time;
 
-            //entity.IncreasePosition(new Vector3(0f, 0f, -0.002f));
+            entity.IncreasePosition(new Vector3(0f, 0f, -0.002f));
             entity.IncreaseRotation(0.002f, 0.002f, 0f);
 
             this.Renderer.Prepare();

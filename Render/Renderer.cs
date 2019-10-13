@@ -27,8 +27,8 @@ namespace MainApp.Render
 
         public void Prepare()
         {
-            //GL.Enable(EnableCap.DepthTest);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearColor(1f, 0f, 0f, 1f);
         }
 
