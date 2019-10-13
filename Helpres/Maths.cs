@@ -18,22 +18,22 @@ namespace MainApp.Helpres
             float scale)
         {
             Matrix4 transofrmationMatrix = Matrix4.Identity;
-            Matrix4 translation;
-            Matrix4.CreateTranslation(ref position, out translation);
             Matrix4 rotationX;
             Matrix4.CreateRotationX(rx, out rotationX);
             Matrix4 rotationY;
             Matrix4.CreateRotationY(ry, out rotationY);
             Matrix4 rotationZ;
             Matrix4.CreateRotationZ(rz, out rotationZ);
+            Matrix4 translation;
+            Matrix4.CreateTranslation(ref position, out translation);
             Matrix4 scaleMatrix;
             Matrix4.CreateScale(scale, out scaleMatrix);
-
-            transofrmationMatrix *= translation;
 
             transofrmationMatrix *= rotationX;
             transofrmationMatrix *= rotationY;
             transofrmationMatrix *= rotationZ;
+
+            transofrmationMatrix *= translation;
 
             transofrmationMatrix *= scaleMatrix;
 
