@@ -111,10 +111,11 @@ namespace MainApp.Engine
             this.StaticShader = new StaticShader();
             this.Renderer = new Renderer(this.StaticShader);
 
-            this.TestModel = this.Loader.LoadToVAO(vertices, textureCoords, indices);
+            //this.TestModel = this.Loader.LoadToVAO(vertices, textureCoords, indices);
+            this.TestModel = OBJLoader.LoadModelOBJ("dragon", this.Loader);
             this.texture = new ModelTexture(this.Loader.LoadTexture("texture"));
             this.texturedModel = new TexturedModel(this.TestModel, this.texture);
-            this.entity = new Entity(this.texturedModel, new Vector3(0, 0, -2f), 0, 0, 0, 1);
+            this.entity = new Entity(this.texturedModel, new Vector3(0, 0, -25f), 0, 0, 0, 1f);
             this.camera = new Camera();
 
             this.Init();
@@ -132,8 +133,8 @@ namespace MainApp.Engine
         {
             time = (float)e.Time;
 
-            entity.IncreasePosition(new Vector3(0f, 0f, -0.002f));
-            entity.IncreaseRotation(0.002f, 0.002f, 0f);
+            //entity.IncreasePosition(new Vector3(0f, 0f, 0f)); 
+            entity.IncreaseRotation(0f, 0.02f, 0f);
 
             this.Renderer.Prepare();
 

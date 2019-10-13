@@ -19,13 +19,17 @@ namespace MainApp.Entities
         public void Move(OpenTK.Input.KeyboardKeyEventArgs e)
         {
             if (e.Key == Key.W)
-                Position = new Vector3(Position.X, Position.Y, Position.Z - 0.002f);
+                Position = new Vector3(Position.X, Position.Y, Position.Z - 0.2f);
             if (e.Key == Key.S)
-                Position = new Vector3(Position.X, Position.Y, Position.Z + 0.002f);
+                Position = new Vector3(Position.X, Position.Y, Position.Z + 0.2f);
             if (e.Key == Key.A)
-                Position = new Vector3(Position.X - 0.002f, Position.Y, Position.Z);
+                Position = new Vector3(Position.X - 0.2f, Position.Y, Position.Z);
             if (e.Key == Key.D)
-                Position = new Vector3(Position.X + 0.002f, Position.Y, Position.Z);
+                Position = new Vector3(Position.X + 0.2f, Position.Y, Position.Z);
+            if (e.Key == Key.Space)
+                Position = new Vector3(Position.X, Position.Y + 0.2f, Position.Z);
+            if (e.Key == Key.LShift)
+                Position = new Vector3(Position.X, Position.Y - 0.2f, Position.Z);
         }
     }
 }
