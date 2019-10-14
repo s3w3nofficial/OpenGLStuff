@@ -11,12 +11,13 @@ namespace MainApp.Loaders
 {
     class Loader
     {
-        public RawModel LoadToVAO(float[] positions, float[] textureCoords, int[] indicies)
+        public RawModel LoadToVAO(float[] positions, float[] textureCoords, float[] normals, int[] indicies)
         {
             int vaoID = createVAO();
             BindIndiciesBuffer(indicies);
             StoreDataInAtrributeList(0, 3, positions);
             StoreDataInAtrributeList(1, 2, textureCoords);
+            StoreDataInAtrributeList(2, 3, normals);
             UnBindVAO();
             return new RawModel(vaoID, indicies.Length);
         }

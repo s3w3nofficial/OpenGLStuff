@@ -102,6 +102,7 @@ namespace MainApp.Engine
         private ModelTexture texture;
         private TexturedModel texturedModel;
         private Entity entity;
+        private Light light;
         private Camera camera;
         float time = 0f;
         public Game()
@@ -113,9 +114,12 @@ namespace MainApp.Engine
 
             //this.TestModel = this.Loader.LoadToVAO(vertices, textureCoords, indices);
             this.TestModel = OBJLoader.LoadModelOBJ("dragon", this.Loader);
-            this.texture = new ModelTexture(this.Loader.LoadTexture("texture"));
+            this.texture = new ModelTexture(this.Loader.LoadTexture("white"));
+            //this.texture.Reflectivity = 1;
+            //this.texture.ShineDamper = 10;
             this.texturedModel = new TexturedModel(this.TestModel, this.texture);
-            this.entity = new Entity(this.texturedModel, new Vector3(0, 0, -25f), 0, 0, 0, 1f);
+            this.entity = new Entity(this.texturedModel, new Vector3(0, 0f, -25f), 0, 0, 0, 0.1f);
+            this.light = new Light(new Vector3(0, 0, -30f), new Vector3(1f, 1f, 1f));
             this.camera = new Camera();
 
             this.Init();
@@ -139,6 +143,8 @@ namespace MainApp.Engine
             this.Renderer.Prepare();
 
             this.StaticShader.Use();
+
+            this.StaticShader.LoadLight(this.light);
 
             this.StaticShader.LoadViewMatrix(this.camera);
 

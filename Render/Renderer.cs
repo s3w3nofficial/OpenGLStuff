@@ -2,6 +2,7 @@
 using MainApp.Helpres;
 using MainApp.Models;
 using MainApp.Shaders;
+using MainApp.Textures;
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 using System;
@@ -17,7 +18,7 @@ namespace MainApp.Render
         {
             projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(
                 (float)((Math.PI / 180) * 70f), 
-                (float)(1280f / 720f), 
+                1280f / 720f, 
                 0.1f, 
                 1000f);
             shader.Use();
@@ -39,6 +40,7 @@ namespace MainApp.Render
             GL.BindVertexArray(model.vaoID);
             GL.EnableVertexAttribArray(0);
             GL.EnableVertexAttribArray(1);
+            GL.EnableVertexAttribArray(2);
 
             Matrix4 transformationMatrix = Maths.CreateTransformationMatrix(
                 entity.Position, 
@@ -49,11 +51,15 @@ namespace MainApp.Render
 
             shader.LoadTransformationMatrix(ref transformationMatrix);
 
+            ModelTexture modelTexture = entity.TexturedModel.Texture;
+            shader.LoadShineVariables(modelTexture.ShineDamper, modelTexture.Reflectivity);
+
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, texturedModel.Texture.TextureID);
             GL.DrawElements(PrimitiveType.Triangles, model.vertexCount, DrawElementsType.UnsignedInt, 0);
             GL.DisableVertexAttribArray(0);
             GL.DisableVertexAttribArray(1);
+            GL.DisableVertexAttribArray(2);
             GL.BindVertexArray(0);
         }
     }

@@ -2,7 +2,9 @@
 using OpenTK;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace MainApp.Loaders
@@ -11,107 +13,71 @@ namespace MainApp.Loaders
     {
         public static RawModel LoadModelOBJ(string fileName, Loader loader)
         {
-            using StreamReader sr = new StreamReader($"assets/models/{fileName}.obj");
+            if (!File.Exists($"assets/models/{fileName}.obj")) throw new FileNotFoundException();
 
-            List<Vector3> vertices = new List<Vector3>();
-            List<Vector2> textures = new List<Vector2>();
-            List<Vector3> normals = new List<Vector3>();
+            string[] lines = File.ReadAllLines($"assets/models/{fileName}.obj");
+
+            int vertexCount = lines.Where(t => t.StartsWith("v ")).Count();
+
+            List<Vector3> vertexBuffer = new List<Vector3>();
+            List<Vector3> normalBuffer = new List<Vector3>();
+            List<Vector2> textureCoordBuffer = new List<Vector2>();
+
+            float[] textureCoords = null;
+            float[] normals = null;
             List<int> indices = new List<int>();
-            float[] verticesArray = null;
-            float[] normalsArray = null;
-            float[] textureArray = null;
-            int[] indicesArray = null;
 
-            string line = null;
-            while(true)
+            foreach (string line in lines)
             {
-                line = sr.ReadLine();
-                string[] currentLine = line.Split(' ');
-                if (line.StartsWith("v "))
+                string[] split = line.Split(' ');
+                switch (split[0])
                 {
-                    Vector3 vertex = new Vector3(
-                        float.Parse(currentLine[1]),
-                        float.Parse(currentLine[2]),
-                        float.Parse(currentLine[3]));
-                    vertices.Add(vertex);
-                }
-                else if (line.StartsWith("vt "))
-                {
-                    Vector2 texture = new Vector2(
-                        float.Parse(currentLine[1]),
-                        float.Parse(currentLine[2]));
-                    textures.Add(texture);
-                } 
-                else if (line.StartsWith("vn "))
-                {
-                    Vector3 normal = new Vector3(
-                        float.Parse(currentLine[1]),
-                        float.Parse(currentLine[2]),
-                        float.Parse(currentLine[3]));
-                    normals.Add(normal);
-                }
-                else if (line.StartsWith("f "))
-                {
-                    textureArray = new float[vertices.Count * 2];
-                    normalsArray = new float[vertices.Count * 3];
-                    break;
+                    case "v":
+                        vertexBuffer.Add(new Vector3(float.Parse(split[1]), float.Parse(split[2]), float.Parse(split[3])));
+                        break;
+                    case "vt":
+                        textureCoordBuffer.Add(new Vector2(float.Parse(split[1]), float.Parse(split[2])));
+                        break;
+                    case "vn":
+                        normalBuffer.Add(new Vector3(float.Parse(split[1]), float.Parse(split[2]), float.Parse(split[3])));
+                        break;
+                    case "f":
+                        for (int i = 1; i < split.Length; i++)
+                        {
+                            if (textureCoords == null) 
+                                textureCoords = new float[vertexCount * 2];
+                            if (normals == null) normals = new float[vertexCount * 3];
+                            
+                            string[] data = split[i].Split('/');
+
+                            int index = int.Parse(data[0]) - 1;
+
+                            indices.Add(index);
+
+                            Vector2 textureCoord = textureCoordBuffer[int.Parse(data[1]) - 1];
+                            textureCoords[index * 2] = textureCoord.X;
+                            textureCoords[index * 2 + 1] = 1 - textureCoord.Y;
+
+                            Vector3 normal = normalBuffer[int.Parse(data[2]) - 1];
+                            normals[index * 3] = normal.X;
+                            normals[index * 3 + 1] = normal.Y;
+                            normals[index * 3 + 2] = normal.Z;
+                        }
+                        break;
                 }
             }
 
-            while(line != null)
+            float[] vertices = new float[vertexBuffer.Count * 3];
+
+            int vertexIndex = 0;
+            foreach (Vector3 vertex in vertexBuffer)
             {
-                if(!line.StartsWith("f "))
-                {
-                    line = sr.ReadLine();
-                    continue;
-                }
-
-                string[] currentLine = line.Split(" ");
-                string[] vertex1 = currentLine[1].Split("/");
-                string[] vertex2 = currentLine[2].Split("/");
-                string[] vertex3 = currentLine[3].Split("/");
-
-                processVertex(vertex1, indices, textures, normals, textureArray, normalsArray);
-                processVertex(vertex2, indices, textures, normals, textureArray, normalsArray);
-                processVertex(vertex3, indices, textures, normals, textureArray, normalsArray);
-
-                line = sr.ReadLine();
+                vertices[vertexIndex++] = vertex.X;
+                vertices[vertexIndex++] = vertex.Y;
+                vertices[vertexIndex++] = vertex.Z;
             }
 
-            verticesArray = new float[vertices.Count * 3];
-            indicesArray = new int[indices.Count];
-
-            int vertexPointer = 0;
-            foreach (var vertex in vertices)
-            {
-                verticesArray[vertexPointer++] = vertex.X;
-                verticesArray[vertexPointer++] = vertex.Y;
-                verticesArray[vertexPointer++] = vertex.Z;
-            }
-
-            for (int i = 0; i < indices.Count; i++)
-                indicesArray[i] = indices[i];
-
-            return loader.LoadToVAO(verticesArray, textureArray, indicesArray);
-        }
-
-        private static void processVertex(
-            string[] vertexData, 
-            List<int> indicies,
-            List<Vector2> textures,
-            List<Vector3> normals,
-            float[] textureArray,
-            float[] normalsArray)
-        {
-            int currentVertexPointer = int.Parse(vertexData[0]) - 1;
-            indicies.Add(currentVertexPointer);
-            Vector2 currentTexture = textures[int.Parse(vertexData[1]) - 1];
-            textureArray[currentVertexPointer * 2] = currentTexture.X;
-            textureArray[currentVertexPointer * 2 + 1] = 1 - currentTexture.Y;
-            Vector3 currentNorm = normals[int.Parse(vertexData[2]) - 1];
-            normalsArray[currentVertexPointer * 3] = currentNorm.X;
-            normalsArray[currentVertexPointer * 3 + 1] = currentNorm.Y;
-            normalsArray[currentVertexPointer * 3 + 2] = currentNorm.Z;
+            return loader.LoadToVAO(vertices, textureCoords, normals, indices.ToArray());
         }
     }
 }

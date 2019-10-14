@@ -12,6 +12,10 @@ namespace MainApp.Shaders
         private int location_projectionMatrix;
         private int location_viewMatrix;
         private int location_transformationMatrix;
+        private int location_lightPosition;
+        private int location_lightColour;
+        private int location_shineDamper;
+        private int location_reflectivity;
         public StaticShader() : base("Shaders/vertexShader.glsl", "Shaders/fragmentShader.glsl")
         {
 
@@ -20,6 +24,7 @@ namespace MainApp.Shaders
         {
             this.BindAttribute(0, "position");
             this.BindAttribute(1, "textureCoords");
+            this.BindAttribute(2, "normal");
         }
 
         protected override void GetAllUniformLocations()
@@ -27,6 +32,16 @@ namespace MainApp.Shaders
             this.location_projectionMatrix = this.GetUniformLocation("projectionMatrix");
             this.location_viewMatrix = this.GetUniformLocation("viewMatrix");
             this.location_transformationMatrix = this.GetUniformLocation("transformationMatrix");
+            this.location_lightPosition = this.GetUniformLocation("lightPosition");
+            this.location_lightColour = this.GetUniformLocation("lightColour");
+            this.location_lightColour = this.GetUniformLocation("shineDamper");
+            this.location_lightColour = this.GetUniformLocation("reflectivity");
+        }
+
+        public void LoadShineVariables(float damper, float reflectivity)
+        {
+            this.LoadFloat(location_shineDamper, damper);
+            this.LoadFloat(location_reflectivity, reflectivity);
         }
 
         public void LoadTransformationMatrix(ref Matrix4 matrix)
@@ -43,6 +58,12 @@ namespace MainApp.Shaders
         {
             Matrix4 viewMatrix = Maths.CreateViewMatrix(camera);
             this.LoadMatrix(location_viewMatrix, ref viewMatrix);
+        }
+
+        public void LoadLight(Light light)
+        {
+            this.LoadVector(location_lightPosition, light.Position);
+            this.LoadVector(location_lightColour, light.Colour);
         }
     }
 }
